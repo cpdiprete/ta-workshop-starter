@@ -169,7 +169,9 @@ def publish_pull_request(issue_number: int, summary: str) -> str:
         subprocess.run(["git", "config", "user.name", "github-actions[bot]"], **git_options)
         subprocess.run(["git", "config", "user.email", "github-actions[bot]@users.noreply.github.com"], **git_options)
         subprocess.run(["git", "checkout", "-b", branch_name], **git_options)
-        subprocess.run(["git", "add", "--", *APP_FILES], **git_options)
+        existing_files = [f for f in APP_FILES if (ROOT / f).exists()]
+        subprocess.run(["git", "add", "--", *existing_files], **git_options)
+        # subprocess.run(["git", "add", "--", *APP_FILES], **git_options)
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
         if not status.stdout.strip():
