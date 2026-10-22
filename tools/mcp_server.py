@@ -20,12 +20,37 @@ APP_FILES = (
     "tests/test_priority.py",
 )
 
+# Map bare basenames to their canonical repo paths for LLM variations
+_NORMALIZED_MAP = {
+    "app.py": "app.py",
+    "app.js": "static/app.js",
+    "static/app.js": "static/app.js",
+    "style.css": "static/style.css",
+    "static/style.css": "static/style.css",
+    "index.html": "templates/index.html",
+    "templates/index.html": "templates/index.html",
+    "test_app.py": "tests/test_app.py",
+    "tests/test_app.py": "tests/test_app.py",
+    "test_priority.py": "tests/test_priority.py",
+    "tests/test_priority.py": "tests/test_priority.py",
+}
+
 
 def _allowed_path(name: str) -> Path:
-    """Keep agent reads and edits inside the small exercise."""
-    path = (ROOT / name).resolve()
-    if path.relative_to(ROOT).as_posix() not in APP_FILES:
+    """Keep agent reads and edits inside the small exercise, normalizing bare names."""
+    clean_name = name.strip().lstrip("/\\")
+    target_rel = _NORMALIZED_MAP.get(clean_name, clean_name)
+    path = (ROOT / target_rel).resolve()
+    
+    # Ensure it resides inside ROOT and matches an allowed file or test file
+    try:
+        rel = path.relative_to(ROOT).as_posix()
+    except ValueError:
+        raise ValueError(f"File is outside the exercise root: {name}")
+
+    if rel not in APP_FILES and not rel.startswith("tests/"):
         raise ValueError(f"File is outside the exercise: {name}")
+
     return path
 
 
