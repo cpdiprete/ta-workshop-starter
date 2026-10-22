@@ -10,8 +10,15 @@ from mcp.server.mcpserver import MCPServer
 
 mcp = MCPServer("WorkshopTools")
 ROOT = Path(__file__).resolve().parents[1]
-APP_FILES = ("app.py", "static/app.js", "static/style.css",
-             "templates/index.html", "tests/test_app.py")
+
+APP_FILES = (
+    "app.py",
+    "static/app.js",
+    "static/style.css",
+    "templates/index.html",
+    "tests/test_app.py",
+    "tests/test_priority.py",
+)
 
 
 def _allowed_path(name: str) -> Path:
